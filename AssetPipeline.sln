@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetPipeline", "AssetPipeline\AssetPipeline.csproj", "{FDAA21B4-C929-425B-827C-C8E95C297BC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetSandbox", "AssetSandbox\AssetSandbox.csproj", "{567B690B-4079-446B-B375-5E0BD515CE06}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FDAA21B4-C929-425B-827C-C8E95C297BC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDAA21B4-C929-425B-827C-C8E95C297BC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDAA21B4-C929-425B-827C-C8E95C297BC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDAA21B4-C929-425B-827C-C8E95C297BC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{567B690B-4079-446B-B375-5E0BD515CE06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{567B690B-4079-446B-B375-5E0BD515CE06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{567B690B-4079-446B-B375-5E0BD515CE06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{567B690B-4079-446B-B375-5E0BD515CE06}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {61A9AFC0-48F8-4DC9-8742-6CB6A44FA539}
+	EndGlobalSection
+EndGlobal
