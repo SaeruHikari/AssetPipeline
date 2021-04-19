@@ -18,6 +18,7 @@ namespace AssetSandbox
 			LiveScanner.ScanUpdateAllMeta();
 
 			var pipeline = PipelineInstance.Instance;
+			var metameta = AssetMetaFile.CreateOrLoadOnDisk("custom/custom.metameta");
 			var meta = AssetMetaFile.CreateOrLoadOnDisk("db/data.mdb");
 			var meta2 = AssetMetaFile.FindAndTryOpen<DBAssetMeta>(meta.Guid);
 

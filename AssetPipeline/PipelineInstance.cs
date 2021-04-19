@@ -36,6 +36,7 @@ namespace AssetPipeline
 
             RegisterAssetMetaFile<AssetMetaFile>();
             RegisterAssetMetaFile<DBAssetMeta>();
+            RegisterAssetMetaFile<AssetMetaAsset>();
         }
 
         public PipelineInstance(string RootURL)

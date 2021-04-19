@@ -48,7 +48,6 @@ namespace AssetPipeline.Pipeline
         [YamlIgnore] public string MetaFilePath 
             => AssetFilePath is null ? null : AssetFilePath + PipelineInstance.MetaAfterFix;
 
-
         virtual protected void OnLoaded(string MetaFile) { }
         virtual protected void OnCreated(string File)
         {
