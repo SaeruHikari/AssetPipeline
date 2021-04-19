@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using YamlDotNet.Core;
+using YamlDotNet.Serialization;
 
 namespace AssetPipeline.Core
 {
@@ -10,17 +12,14 @@ namespace AssetPipeline.Core
         {
             guid = value;
         }
-        
         public AssetGuid(string str)
         {
             guid = Guid.Parse(str);
         }
-
         static AssetGuid()
         {
             SizeInBytes = Guid.NewGuid().ToByteArray().Length;
         }
-
         public static AssetGuid Create()
         {
             return new AssetGuid(Guid.NewGuid());
@@ -47,7 +46,7 @@ namespace AssetPipeline.Core
         {
             guid = new Guid(bytes);
         }
-        Guid guid;
+        [YamlMember, PipelineMeta] public Guid guid;
         public static readonly int SizeInBytes; 
     }
 }

@@ -8,6 +8,11 @@ using LightningDB;
 
 namespace AssetPipeline
 {
+    public interface IVersionControlConnection
+    {
+        public int FileVersion(string File);
+    }
+
     //[PipelineDB("AssetPipeline")]
     public class PipelineInstance 
     {
@@ -24,30 +29,26 @@ namespace AssetPipeline
             }
         }
 
-        public static void Initialize(PipelineURL RootURL)
+        public static void Initialize(string RootURL)
         {
             _instance = new PipelineInstance(RootURL);
 
             RegisterAssetMetaFile<AssetMetaFile>();
         }
 
-        PipelineInstance(PipelineURL RootURL)
+        PipelineInstance(string RootURL)
         {
             Root = RootURL;
-            // Connect to DB
-            if(RootURL.virtualSource.Length != 0)
-            {
-                Console.WriteLine("ERROR: VirtualLink not supported now.");
-            }
-            DBEnv = new LightningEnvironment(RootURL.url);
+            DBEnv = new LightningEnvironment(RootURL);
             DBEnv.Open();
         }
 
         public readonly LightningEnvironment DBEnv;
         public static PipelineInstance Instance => _instance;
         protected static PipelineInstance _instance;
+        public static IVersionControlConnection VersionControl => null;
 
-        public readonly PipelineURL Root;
+        public readonly string Root;
         public readonly Dictionary<AssetGuid, Type> TypedMetaFileDictionary = new Dictionary<AssetGuid, Type>();
         public readonly Dictionary<string, Type> ExtNameMetaTypeDictionary = new Dictionary<string, Type>();
     }

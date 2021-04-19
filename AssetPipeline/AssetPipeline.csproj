@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="LightningDB" Version="0.13.0" />
+    <PackageReference Include="YamlDotNet" Version="11.1.1" />
   </ItemGroup>
 
   <ItemGroup>
