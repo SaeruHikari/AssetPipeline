@@ -12,9 +12,5 @@ namespace AssetPipeline
         NONE
     }
 
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
-    public class PipelineMetaAttribute : Attribute
-    {
 
-    }
 }

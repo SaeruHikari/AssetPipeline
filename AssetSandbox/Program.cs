@@ -3,6 +3,7 @@ using System.Text;
 using LightningDB;
 using AssetPipeline.Core;
 using AssetPipeline.Pipeline;
+using AssetPipeline.Pipeline.InternalAssets;
 using AssetPipeline;
 
 namespace AssetSandbox
@@ -14,10 +15,11 @@ namespace AssetSandbox
 			DBInit();
 
 			PipelineInstance.Initialize("Assets");
-			LiveScanner.ScanUpdateAll();
+			LiveScanner.ScanUpdateAllMeta();
 
 			var pipeline = PipelineInstance.Instance;
-			var meta = AssetMetaFile.CreateOrLoadOnDisk<AssetMetaFile>("data.mdb");
+			var meta = AssetMetaFile.CreateOrLoadOnDisk("data.mdb");
+			var meta2 = AssetMetaFile.FindOnDisk<DBAssetMeta>(meta.Guid);
 
 			Console.WriteLine("Scanner keeps working, Press enter to exit...");
 			Console.ReadLine();

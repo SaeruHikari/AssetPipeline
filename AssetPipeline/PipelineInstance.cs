@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using AssetPipeline.Core;
 using AssetPipeline.Pipeline;
-
+using AssetPipeline.Pipeline.InternalAssets;
 using LightningDB;
 
 namespace AssetPipeline
@@ -19,7 +19,7 @@ namespace AssetPipeline
         static public void RegisterAssetMetaFile<T>()
         {
             Type classType = typeof(T);
-            var guid = classType.GetCustomAttributes(typeof(MetaGuidAttribute), false)[0] as MetaGuidAttribute;
+            var guid = classType.GetCustomAttributes(typeof(AssetMetaAttribute), false)[0] as AssetMetaAttribute;
             Instance.TypedMetaFileDictionary[guid.guid] = classType;
 
             var exts = classType.GetCustomAttributes(typeof(MetaSourceExtAttribute), false);
@@ -34,9 +34,10 @@ namespace AssetPipeline
             _instance = new PipelineInstance(RootURL);
 
             RegisterAssetMetaFile<AssetMetaFile>();
+            RegisterAssetMetaFile<DBAssetMeta>();
         }
 
-        PipelineInstance(string RootURL)
+        public PipelineInstance(string RootURL)
         {
             Root = RootURL;
             DBEnv = new LightningEnvironment(RootURL);
@@ -49,7 +50,9 @@ namespace AssetPipeline
         public static IVersionControlConnection VersionControl => null;
 
         public readonly string Root;
+        public static readonly string MetaAfterFix = ".meta";
         public readonly Dictionary<AssetGuid, Type> TypedMetaFileDictionary = new Dictionary<AssetGuid, Type>();
         public readonly Dictionary<string, Type> ExtNameMetaTypeDictionary = new Dictionary<string, Type>();
+        public static Dictionary<Guid, AssetMetaFile> AllMetas = new Dictionary<Guid, AssetMetaFile>();
     }
 }

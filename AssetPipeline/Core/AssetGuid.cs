@@ -46,7 +46,7 @@ namespace AssetPipeline.Core
         {
             guid = new Guid(bytes);
         }
-        [YamlMember, PipelineMeta] public Guid guid;
+        [YamlMember] public Guid guid;
         public static readonly int SizeInBytes; 
     }
 }
