@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using AssetPipeline.Core;
@@ -51,8 +52,10 @@ namespace AssetPipeline
 
         public readonly string Root;
         public static readonly string MetaAfterFix = ".meta";
-        public readonly Dictionary<AssetGuid, Type> TypedMetaFileDictionary = new Dictionary<AssetGuid, Type>();
+        public readonly Dictionary<Guid, Type> TypedMetaFileDictionary = new Dictionary<Guid, Type>();
         public readonly Dictionary<string, Type> ExtNameMetaTypeDictionary = new Dictionary<string, Type>();
-        public static Dictionary<Guid, AssetMetaFile> AllMetas = new Dictionary<Guid, AssetMetaFile>();
+
+        public static ConcurrentDictionary<Guid, AssetMetaFile> AllMetas = new ConcurrentDictionary<Guid, AssetMetaFile>();
+        public static ConcurrentDictionary<Guid, string> AllMetasPath = new ConcurrentDictionary<Guid, string>();
     }
 }

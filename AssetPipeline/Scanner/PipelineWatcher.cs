@@ -33,6 +33,7 @@ namespace AssetPipeline.Scanner
                 return;
             }
             Console.WriteLine($"Changed: {e.FullPath}");
+            //LiveScanner.ScanMetaAt(e.FullPath);
         }
 
         private static void OnCreated(object sender, FileSystemEventArgs e)
@@ -41,8 +42,11 @@ namespace AssetPipeline.Scanner
             Console.WriteLine(value);
         }
 
-        private static void OnDeleted(object sender, FileSystemEventArgs e) =>
+        private static void OnDeleted(object sender, FileSystemEventArgs e)
+        {
             Console.WriteLine($"Deleted: {e.FullPath}");
+
+        }
 
         private static void OnRenamed(object sender, RenamedEventArgs e)
         {

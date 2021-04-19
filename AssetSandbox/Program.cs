@@ -18,8 +18,12 @@ namespace AssetSandbox
 			LiveScanner.ScanUpdateAllMeta();
 
 			var pipeline = PipelineInstance.Instance;
-			var meta = AssetMetaFile.CreateOrLoadOnDisk("data.mdb");
-			var meta2 = AssetMetaFile.FindOnDisk<DBAssetMeta>(meta.Guid);
+			var meta = AssetMetaFile.CreateOrLoadOnDisk("db/data.mdb");
+			var meta2 = AssetMetaFile.FindAndTryOpen<DBAssetMeta>(meta.Guid);
+
+			var metaSource = meta2.AssetFilePath;
+
+			AssetMetaFile.FindAndTryDelete(meta.Guid);
 
 			Console.WriteLine("Scanner keeps working, Press enter to exit...");
 			Console.ReadLine();
@@ -28,7 +32,7 @@ namespace AssetSandbox
 
 		static void DBInit()
         {
-			using (var env = new LightningEnvironment("Assets"))
+			using (var env = new LightningEnvironment("Assets/db"))
 			{
 				env.MaxDatabases = 2;
 				env.Open();

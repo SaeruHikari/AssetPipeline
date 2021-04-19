@@ -12,13 +12,13 @@ namespace AssetPipeline.Pipeline
     {
         public AssetMetaAttribute(string value)
         {
-            guid = new AssetGuid(value);
+            guid = new Guid(value);
         }
-        public AssetMetaAttribute(AssetGuid value)
+        public AssetMetaAttribute(Guid value)
         {
             guid = value;
         }
-        public readonly AssetGuid guid;
+        public readonly Guid guid;
     }
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
@@ -41,7 +41,15 @@ namespace AssetPipeline.Pipeline
         [YamlMember] public DateTime LastWriteTime { get; set; }
         [YamlMember] public string Source { get; set; }
         [YamlIgnore] public string ThisFile => Source + PipelineInstance.MetaAfterFix;
+        [YamlIgnore] public string AssetFilePath
+            => PipelineInstance.AllMetasPath.ContainsKey(Guid) ?
+            System.IO.Path.Combine(PipelineInstance.Instance.Root, PipelineInstance.AllMetasPath[Guid], Source) :
+            null;
+        [YamlIgnore] public string MetaFilePath 
+            => AssetFilePath is null ? null : AssetFilePath + PipelineInstance.MetaAfterFix;
 
+
+        virtual protected void OnLoaded(string MetaFile) { }
         virtual protected void OnCreated(string File)
         {
             // Initialize Data.
@@ -51,20 +59,6 @@ namespace AssetPipeline.Pipeline
             VersionNumber = PipelineInstance.VersionControl is null ? 0 : PipelineInstance.VersionControl.FileVersion(File);
             LastWriteTime = info.LastWriteTime;
             Source = System.IO.Path.GetFileName(File);
-
-            // Serialize & Write At Once.
-            var yaml = serializer.Serialize(this);
-            var stream = System.IO.File.Create(System.IO.Path.Combine(
-                PipelineInstance.Instance.Root, File + PipelineInstance.MetaAfterFix));
-            System.IO.StreamWriter writer = new System.IO.StreamWriter(stream);
-            writer.Write(yaml);
-            writer.Flush();
-            writer.Close();
-        }
-
-        virtual protected void OnLoaded(string MetaFile)
-        {
-
         }
 
         public static AssetMetaFile LoadMetaFromDisk(string AssetFileName)
@@ -91,7 +85,7 @@ namespace AssetPipeline.Pipeline
             return Loaded;
         }
 
-        public static AssetMetaFile FindOnDisk(string AssetFileName)
+        public static AssetMetaFile FindAndTryOpen(string AssetFileName)
         {
             var existed = System.IO.File.Exists(
                 System.IO.Path.Combine(PipelineInstance.Instance.Root, AssetFileName + PipelineInstance.MetaAfterFix));
@@ -100,12 +94,14 @@ namespace AssetPipeline.Pipeline
                 null;
         }
 
-        public static T FindOnDisk<T>(Guid Guid) where T : AssetMetaFile
+        public static T FindAndTryOpen<T>(Guid Guid) where T : AssetMetaFile
         {
+            // Find in Pipeline Cache.
             var existed = PipelineInstance.AllMetas.TryGetValue(Guid, out AssetMetaFile F);
             if(!existed)
             {
-                System.Console.WriteLine($"Asset {Guid} Not Existed!");
+                System.Console.WriteLine($"Asset {Guid} Not Existed in PipelineCache!");
+                //TODO: Find On Disk.
             }
             else if (F is null)
             {
@@ -114,21 +110,54 @@ namespace AssetPipeline.Pipeline
             else if(F.GetType() == typeof(T))
             {
                 return F as T;
+            } 
+            else
+            {
+                System.Console.WriteLine($"Asset {Guid} exist however is {F.GetType()}, not of Type {typeof(T)}!");
+                return null;
             }
+            System.Console.WriteLine("Unknown Error!");
             return null;
         }
 
-        public static AssetMetaFile FindOnDisk(Guid Guid)
+        public static AssetMetaFile FindAndTryOpen(Guid Guid)
         {
-            return FindOnDisk<AssetMetaFile>(Guid);
+            return FindAndTryOpen<AssetMetaFile>(Guid);
+        }
+        
+        public static void FindAndTryDelete(string AssetPath, string MetaPath)
+        {
+            var E0 = AssetPath is null ? false :System.IO.File.Exists(MetaPath);
+            var E1 = MetaPath is null ? false : System.IO.File.Exists(MetaPath);
+            if(E0) System.IO.File.Delete(AssetPath);
+            if(E1) System.IO.File.Delete(MetaPath);
+        }
+
+        public static void FindAndTryDelete(Guid Guid)
+        {
+            // Find in Pipeline Cache.
+            var ExistedInCache = PipelineInstance.AllMetas.TryGetValue(Guid, out AssetMetaFile F);
+            //TODO: Find On Disk.
+            if (ExistedInCache && F != null)
+            {
+                // Delete AssetFile & MetaFile.
+                FindAndTryDelete(F.AssetFilePath, F.MetaFilePath);
+                // Remove Related Cache.
+                var R0 = PipelineInstance.AllMetas.TryRemove(Guid, out var RemovedMeta);
+                var R1 = PipelineInstance.AllMetasPath.TryRemove(Guid, out var RemovedPath);
+                if(!R0 || !R1)
+                {
+                    Console.WriteLine("Error: Failed to Remove Meta Cache!");
+                }
+            }
+            return;
         }
 
         public static AssetMetaFile CreateOrLoadOnDisk(string AssetFileName)
         {
-            var Existed = FindOnDisk(AssetFileName);
+            var Existed = FindAndTryOpen(AssetFileName);
             if (Existed != null) 
                 return Existed;
-
             var ext = System.IO.Path.GetExtension(AssetFileName);
             if (!PipelineInstance.Instance.ExtNameMetaTypeDictionary.TryGetValue(ext, out Type T))
             {
@@ -136,6 +165,15 @@ namespace AssetPipeline.Pipeline
             }
             var Result = System.Activator.CreateInstance(T) as AssetMetaFile;
             Result.OnCreated(AssetFileName);
+            // Serialize & Write At Once.
+            var yaml = serializer.Serialize(Result);
+            var ThisPath = System.IO.Path.Combine(PipelineInstance.Instance.Root, AssetFileName + PipelineInstance.MetaAfterFix);
+            var stream = System.IO.File.Create(ThisPath);
+            System.IO.StreamWriter writer = new System.IO.StreamWriter(stream);
+            writer.Write(yaml);
+            writer.Flush();
+            writer.Close();
+            LiveScanner.ScanMetaAt(ThisPath);
             return Result;
         }
 
