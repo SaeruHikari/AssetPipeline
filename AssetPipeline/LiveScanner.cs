@@ -12,12 +12,11 @@ namespace AssetPipeline
     {
         public static void ScanMetaAt(string MetaPath)
         {
-            var Root = PipelineInstance.Instance.Root;
-            var RMetaPath = Path.GetRelativePath(Root, MetaPath);
-            string AssetPath = RMetaPath.Substring(0, RMetaPath.Length - PipelineInstance.MetaAfterFix.Length);
+            string AssetPath = MetaPath.Substring(0, MetaPath.Length - PipelineInstance.MetaAfterFix.Length);
             var MetaLoaded = AssetMetaFile.LoadMetaFromDisk(AssetPath);
             PipelineInstance.AllMetas[MetaLoaded.Guid] = MetaLoaded;
-            PipelineInstance.AllMetasPath[MetaLoaded.Guid] = Path.GetDirectoryName(RMetaPath);
+            PipelineInstance.AllMetasDir[MetaLoaded.Guid] = Path.GetDirectoryName(MetaPath);
+            PipelineInstance.AllMetasPath[MetaPath] = MetaLoaded.Guid;
         }
 
         public static void ScanUpdateAllMeta()
@@ -28,8 +27,24 @@ namespace AssetPipeline
             );
             foreach(var MetaPath in MetaPaths)
             {
-                ScanMetaAt(MetaPath);
+                var RMetaPath = Path.GetRelativePath(Root, MetaPath);
+                ScanMetaAt(RMetaPath);
             }
+        }
+
+        public static string[] ScanUnderPath(string Path, bool Absolute = false, bool Recursive = false)
+        {
+            var Root = PipelineInstance.Instance.Root;
+            string[] MetaPaths = Directory.GetFiles(
+                Absolute?Path:System.IO.Path.Combine(Root, Path),
+                "*" + PipelineInstance.MetaAfterFix,
+                Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly
+            );
+            for(int i = 0; i < MetaPaths.Length; i++)
+            {
+                MetaPaths[i] = Absolute ? MetaPaths[i] : System.IO.Path.GetRelativePath(Root, MetaPaths[i]);
+            }
+            return MetaPaths;
         }
 
         static LiveScanner()

@@ -57,6 +57,7 @@ namespace AssetPipeline
         public readonly Dictionary<string, Type> ExtNameMetaTypeDictionary = new Dictionary<string, Type>();
 
         public static ConcurrentDictionary<Guid, AssetMetaFile> AllMetas = new ConcurrentDictionary<Guid, AssetMetaFile>();
-        public static ConcurrentDictionary<Guid, string> AllMetasPath = new ConcurrentDictionary<Guid, string>();
+        public static ConcurrentDictionary<string, Guid> AllMetasPath = new ConcurrentDictionary<string, Guid>();
+        public static ConcurrentDictionary<Guid, string> AllMetasDir = new ConcurrentDictionary<Guid, string>();
     }
 }

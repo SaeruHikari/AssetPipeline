@@ -40,10 +40,11 @@ namespace AssetPipeline.Pipeline
         [YamlMember] public int VersionNumber { get; set; }
         [YamlMember] public DateTime LastWriteTime { get; set; }
         [YamlMember] public string Source { get; set; }
+        [YamlIgnore] public string Name => System.IO.Path.GetFileNameWithoutExtension(Source);
         [YamlIgnore] public string ThisFile => Source + PipelineInstance.MetaAfterFix;
         [YamlIgnore] public string AssetFilePath
-            => PipelineInstance.AllMetasPath.ContainsKey(Guid) ?
-            System.IO.Path.Combine(PipelineInstance.Instance.Root, PipelineInstance.AllMetasPath[Guid], Source) :
+            => PipelineInstance.AllMetasDir.ContainsKey(Guid) ?
+            System.IO.Path.Combine(PipelineInstance.Instance.Root, PipelineInstance.AllMetasDir[Guid], Source) :
             null;
         [YamlIgnore] public string MetaFilePath 
             => AssetFilePath is null ? null : AssetFilePath + PipelineInstance.MetaAfterFix;
@@ -143,7 +144,7 @@ namespace AssetPipeline.Pipeline
                 FindAndTryDelete(F.AssetFilePath, F.MetaFilePath);
                 // Remove Related Cache.
                 var R0 = PipelineInstance.AllMetas.TryRemove(Guid, out var RemovedMeta);
-                var R1 = PipelineInstance.AllMetasPath.TryRemove(Guid, out var RemovedPath);
+                var R1 = PipelineInstance.AllMetasDir.TryRemove(Guid, out var RemovedPath);
                 if(!R0 || !R1)
                 {
                     Console.WriteLine("Error: Failed to Remove Meta Cache!");
@@ -166,7 +167,7 @@ namespace AssetPipeline.Pipeline
             Result.OnCreated(AssetFileName);
             // Serialize & Write At Once.
             var yaml = serializer.Serialize(Result);
-            var ThisPath = System.IO.Path.Combine(PipelineInstance.Instance.Root, AssetFileName + PipelineInstance.MetaAfterFix);
+            var ThisPath = AssetFileName + PipelineInstance.MetaAfterFix;
             var stream = System.IO.File.Create(ThisPath);
             System.IO.StreamWriter writer = new System.IO.StreamWriter(stream);
             writer.Write(yaml);

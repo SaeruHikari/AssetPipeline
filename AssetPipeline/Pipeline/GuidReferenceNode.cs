@@ -7,15 +7,16 @@ namespace AssetPipeline.Pipeline
 {
     public struct GuidReferenceNode : IDBData
     {
-        public AssetGuid[] refs;
+        public int Length => refs is null ? 0 : refs.Length;
+        public Guid[] refs;
 
         public void FromBytes(Span<byte> bytes)
         {
-            var Refs = new List<AssetGuid>();
-            for (int Offset = 0; Offset < bytes.Length; Offset += AssetGuid.SizeInBytes)
+            var Refs = new List<Guid>();
+            for (int Offset = 0; Offset < bytes.Length; Offset += 12)
             {
-                var Ref = new AssetGuid();
-                Ref.FromBytes(bytes.Slice(Offset, AssetGuid.SizeInBytes));
+                var Ref = new Guid(bytes.Slice(Offset, 12));
+                var arr = Ref.ToByteArray();
                 Refs.Add(Ref);
             }
             refs = Refs.ToArray();
@@ -24,9 +25,9 @@ namespace AssetPipeline.Pipeline
         public byte[] ToBytes()
         {
             List<byte> bytes = new List<byte>();
-            foreach(AssetGuid G in refs)
+            foreach(var G in refs)
             {
-                bytes.AddRange(G.ToBytes());
+                bytes.AddRange(G.ToByteArray());
             }
             return bytes.ToArray();
         }
