@@ -10,16 +10,16 @@ namespace AssetSandbox
 {
     public class ImGuiWindow
     {
-        protected static Veldrid.Sdl2.Sdl2Window window;
-        protected static Veldrid.GraphicsDevice gd;
-        protected static Veldrid.CommandList cl;
-        protected static Veldrid.ImGuiRenderer controller;
+        public static Veldrid.Sdl2.Sdl2Window window;
+        public static Veldrid.GraphicsDevice gd;
+        public static Veldrid.CommandList cl;
+        public static Veldrid.ImGuiRenderer controller;
 
         public ImGuiWindow()
         {
             Veldrid.StartupUtilities.VeldridStartup.CreateWindowAndGraphicsDevice(
               new Veldrid.StartupUtilities.WindowCreateInfo(
-                148, 148, 720, 410, Veldrid.WindowState.Normal, "Asset Browser"
+                148, 148, 780, 432, Veldrid.WindowState.Normal, "Asset Browser"
               ),
               new Veldrid.GraphicsDeviceOptions(true, null, true),
               out window,
@@ -51,7 +51,21 @@ namespace AssetSandbox
             if (!window.Exists) { return; }
             controller.Update(1f / 60f, snapshot);
 
+            ImGuiWindowFlags windowFlags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking;
+            ImGui.SetNextWindowPos(new Vector2(0.0f, 0.0f), ImGuiCond.Always);
+            ImGui.SetNextWindowSize(new Vector2(window.Width, window.Height));
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
+            windowFlags |= ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize |
+                           ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus |
+                           ImGuiWindowFlags.NoTitleBar;
+            var pOpen = true;
+            //ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.22f, 0.22f, 0.22f, 1.0f));
+            ImGui.Begin("Asset Browser", ref pOpen, windowFlags);
+            ImGui.PopStyleVar(2);
+            //ImGui.PopStyleColor(1);
             OnImGui();
+            ImGui.End();
 
             cl.Begin();
             cl.SetFramebuffer(gd.MainSwapchain.Framebuffer);

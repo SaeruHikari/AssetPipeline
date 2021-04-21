@@ -7,7 +7,8 @@ namespace AssetPipeline.Pipeline
 {
     public struct GuidReferenceNode : IDBData
     {
-        public int Length => refs is null ? 0 : refs.Length;
+        [YamlDotNet.Serialization.YamlIgnore] public int Length => refs is null ? 0 : refs.Length;
+        
         public Guid[] refs;
 
         public void FromBytes(Span<byte> bytes)

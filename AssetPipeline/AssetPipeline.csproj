@@ -1,16 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="LightningDB" Version="0.13.0" />
+    <PackageReference Include="P4API.NET" Version="2020.1.193.5313" />
+    <PackageReference Include="p4api.net.core" Version="2020.2.207.5590" />
+    <PackageReference Include="p4api.net.x64" Version="2020.2.207.5590" />
+    <PackageReference Include="p4api.net.x86" Version="2020.2.207.5590" />
     <PackageReference Include="YamlDotNet" Version="11.1.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pipeline\SourceControl\" />
+    <Folder Include="Pipeline\InternalAssets\" />
   </ItemGroup>
 
 </Project>

@@ -168,7 +168,9 @@ namespace AssetPipeline.Pipeline
             // Serialize & Write At Once.
             var yaml = serializer.Serialize(Result);
             var ThisPath = AssetFileName + PipelineInstance.MetaAfterFix;
-            var stream = System.IO.File.Create(ThisPath);
+            var stream = System.IO.File.Create(
+                System.IO.Path.Combine(PipelineInstance.Instance.Root, ThisPath)
+            );
             System.IO.StreamWriter writer = new System.IO.StreamWriter(stream);
             writer.Write(yaml);
             writer.Flush();

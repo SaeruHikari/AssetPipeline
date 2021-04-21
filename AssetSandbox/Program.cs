@@ -1,23 +1,25 @@
 ﻿using AssetPipeline;
-using AssetPipeline.Pipeline;
-using AssetPipeline.Pipeline.InternalAssets;
 using LightningDB;
-using System;
 using System.Text;
-using ImGuiNET;
-
+using AssetSandbox.Assets;
+using AssetPipeline.Pipeline;
+using System.Collections.Concurrent;
+using System;
 
 namespace AssetSandbox
 {
-    public class MainProgram
+    public static class MainProgram
     {
+        public static ConcurrentDictionary<Guid, Veldrid.Texture> PreviewTextures = new ConcurrentDictionary<Guid, Veldrid.Texture>();
+        public static ConcurrentDictionary<Guid, Veldrid.ImageSharp.ImageSharpTexture> CPUTextures = new ConcurrentDictionary<Guid, Veldrid.ImageSharp.ImageSharpTexture>();
+
         static void Main(string[] args)
         {
             PipelineInstance.Initialize("Assets");
+            PipelineInstance.RegisterAssetMetaFile<TextureAsset>();
             LiveScanner.ScanUpdateAllMeta();
 
             var pipeline = PipelineInstance.Instance;
-            //var metameta = AssetMetaFile.CreateOrLoadOnDisk("custom/custom.metameta");
             //var meta = AssetMetaFile.CreateOrLoadOnDisk("db/data.mdb");
             //var meta2 = AssetMetaFile.FindAndTryOpen<DBAssetMeta>(meta.Guid);
             //var metaSource = meta2.AssetFilePath;

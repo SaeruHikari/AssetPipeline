@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using AssetPipeline.Core;
 using AssetPipeline.Pipeline;
-using AssetPipeline.Pipeline.InternalAssets;
+using AssetPipeline.Pipeline.SourceControl;
 using LightningDB;
 
 namespace AssetPipeline
@@ -35,8 +35,11 @@ namespace AssetPipeline
             _instance = new PipelineInstance(RootURL);
 
             RegisterAssetMetaFile<AssetMetaFile>();
-            RegisterAssetMetaFile<DBAssetMeta>();
-            RegisterAssetMetaFile<AssetMetaAsset>();
+        }
+
+        public static void ConnectToPerforce(string ServerIp, string UserName, string Workspace = "")
+        {
+            _instance.sourceControl = new PerfoceConnection(ServerIp, UserName, Workspace);
         }
 
         public PipelineInstance(string RootURL)
@@ -55,6 +58,9 @@ namespace AssetPipeline
         public static readonly string MetaAfterFix = ".meta";
         public readonly Dictionary<Guid, Type> TypedMetaFileDictionary = new Dictionary<Guid, Type>();
         public readonly Dictionary<string, Type> ExtNameMetaTypeDictionary = new Dictionary<string, Type>();
+
+        public static SourceControlBase SourceContrrol => Instance.sourceControl;
+        protected SourceControlBase sourceControl = new SourceControlBase();
 
         public static ConcurrentDictionary<Guid, AssetMetaFile> AllMetas = new ConcurrentDictionary<Guid, AssetMetaFile>();
         public static ConcurrentDictionary<string, Guid> AllMetasPath = new ConcurrentDictionary<string, Guid>();
